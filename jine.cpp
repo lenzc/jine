@@ -2,8 +2,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <chrono>
-#include <ctime>    
+
 
 
 Jine::Jine()
@@ -81,69 +80,109 @@ void Jine::playJingle(Jingle jingle)
 	exec(cmd_name.c_str());		
 }
 
+void Jine::createJingle(std::string field, int hour, int min)
+{
+    int game_min = 60 * hour + min;
+    
+    m_jingles.push_back({"pre5", field, "pre5_kurz.mp3", game_min - 5});
+    m_jingles.push_back({"start", field, "start_kurz.mp3", game_min});
+    m_jingles.push_back({"5min", field, "5min_kurz.mp3", game_min + 85});
+    m_jingles.push_back({"end", field, "end_kurz.mp3", game_min + 90});
+}
 
 void Jine::run()
 {
-	m_cycleMins = 1;
-	
-	m_jingles.push_back({"Jingle 1" , "j1.mp3", 0.1, 0.1});
-	m_jingles.push_back({"Ende" , "j2.mp3", 0.3, 0.3});
-	
-	
-	auto start = std::chrono::system_clock::now();
-    std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-	std::cout << "programm startet at " << std::ctime(&start_time) << "\n";
-
+    //Samstag
+    createJingle("1 2", 9, 0);
+    createJingle("1  ", 10, 40);
+    createJingle("  2", 11, 40);
+    createJingle("1 2", 13, 20);
+    createJingle("1  ", 15, 30);
+    createJingle("1 2", 17, 10);
+    
+    
+    //Sonntag
+//     createJingle("1 2", 9, 0);
+//     createJingle("1  ", 10, 40);
+//     createJingle("  2", 11, 40);
+//     createJingle("1 2", 13, 50);
+    
+    
+    
+//     m_jingles.push_back({"test1", "1",  "end_kurz.mp3", 2*60 + 55});
+    
+    std::sort(m_jingles.begin(), m_jingles.end(), [](Jingle a, Jingle b) {
+        return a.min < b.min;
+    });
+    
+    printConsole();   
 	
 	while(true)
 	{
-		for(auto& jingle : m_jingles)
-		{
-			std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now() - start;
-			float sleepSecs = jingle.startTime * 60 - elapsed_seconds.count();
-			
-			std::cout << "next Jingle: " << jingle.name << " sleep: " << sleepSecs << "\n";
-			
-			wait(sleepSecs, jingle.name);
-// 			usleep((sleepSecs - 2 ) * 1000000);
-			
-			fadeVol(m_sinkID, 100, 0, 2);
-			
-			//start jingle
-			playJingle(jingle);
-// 			wait(jingle.duration, "Jingle end");
-			
-			fadeVol(m_sinkID, 0, 100, 2);
-			
-		}
-		std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now() - start;
-		float sleepEndCycle = m_cycleMins * 60 - elapsed_seconds.count();
-		
-		wait(sleepEndCycle, "Cycle End");
-			
-		
-		start = std::chrono::system_clock::now();
-		
-	}
-	
+        if(m_jingleID == m_jingles.size())
+        {
+            std::cout << "day is over. No jingles left. JingleID: " << m_jingleID << "\n";
+            return;
+        }
+        
+        //current time
+        m_now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());      
+        int h = (m_now / 3600) % 24 + 2;
+        int m = (m_now / 60) % 60;
+        int s = m_now % 60;
+    
+//         std::cout << h << ":" << m << ":" << s << "\n";
+        
+        int s_today = h * 3600 + 60 * m + s;
+        
+        printConsole();
+        
+        if(s_today - m_jingles[m_jingleID].min * 60 > 10)
+        {
+            m_jingleID++;
+            continue;
+        }
+        
+        if(m_jingles[m_jingleID].min * 60 - 2 < s_today)
+        {
+            fadeVol(m_max_musik_vol, 0, 2);
+            playJingle(m_jingles[m_jingleID]);
+            fadeVol(0, m_max_musik_vol, 2);
+            m_jingleID++;
+        }
+        
+        usleep(1000 * 1000);
+        
+    }
 }
 
 
-void Jine::wait(float secs, std::string nextAction)
+void Jine::printConsole()
 {
-	auto start = std::chrono::system_clock::now();
-	double elapsedSecs = 0;
-	do
-	{
-		usleep(500 * 1000);
-		std::chrono::duration<double> elapsed_seconds = std::chrono::system_clock::now() - start;
-		elapsedSecs = elapsed_seconds.count();
-		
-		std::cout << nextAction << " in " << secs - elapsedSecs << "sec\n";
-		
-	}while(elapsedSecs < secs);
-		
-	
+    system("clear");
+    int h = (m_now / 3600) % 24 + 2;
+    int m = (m_now / 60) % 60;
+    int s = m_now % 60;
+    
+    std::string s_zero = s < 10? "0": "";
+    std::string m_zero = m < 10? "0": "";
+    
+    std::cout << "Time: " << h << ":" << m_zero << m << ":" << s_zero << s ;
+    std::cout << "\t musik vol: " << m_vol << "\n";
+    auto nextJingle = m_jingles[m_jingleID];
+    std::cout << "\nNext Jingle: " << nextJingle.name << " at " << nextJingle.time() << "\n";
+    
+    std::cout << "\n\n\tJingle list:\n\n ";
+    std::cout << "Field\tJingle\tTime\n";
+    
+    for(unsigned int i=0;i<m_jingles.size();i++)
+    {
+        auto& j = m_jingles[i];
+        if(i == m_jingleID)
+            std::cout << "--------------------\n";
+        std::cout << j.field << "\t" << j.name << "\t" << j.time() << "\n";
+    }
+    
 }
 
 
@@ -160,62 +199,44 @@ std::string Jine::exec(const char* cmd) {
 	return result;
 }
 
-void Jine::changeVol(int id, int volPercent)
+void Jine::changeVol()
 {
-	std::string cmd = "pactl -- set-sink-input-volume " + std::to_string(id) + " " + std::to_string(volPercent) + "%";
+	std::string cmd = "pactl -- set-sink-input-volume " + std::to_string(m_sinkID) + " " + std::to_string(m_vol) + "%";
 	system(cmd.c_str());
-	std::cout << "set id: " << id << "\t to " << volPercent << "% vol.\n";
+// 	std::cout << "set id: " << id << "\t to " << m_vol << "% vol.\n";
 }
 
-void Jine::fadeVol(int id, int start, int end, float secs)
+void Jine::fadeVol(int start, int end, float secs)
 {
     float delta_per_sec = (end-start) / secs;
-    
-//     std::cout << "delta: " << delta_per_sec << "\n";
-    
-    int vol = start;
-    
-    
-    while(vol != end)
+       
+    while(m_vol != end)
     {
         int delta_loop = (int) delta_per_sec / 10;
-        vol += delta_loop;
-        if(std::abs(vol - end) < std::abs(delta_loop))
-            vol = end;
+        m_vol += delta_loop;
+        if(std::abs(m_vol - end) < std::abs(delta_loop))
+            m_vol = end;
         
-      
-        changeVol(id, vol);
+        changeVol();
+        printConsole();
         usleep(100 * 1000);
         
-        if(vol < 0 || vol > 100)
+        if(m_vol < 0 || m_vol > 100)
             return;
     }    
 }
 
-void Jine::listInputs()
+
+std::string Jine::Jingle::time()
 {
-	
-	
-	
-	
-/*	
-	int id = std::stoi(id_str);
-
-	std::cout << "I got: " << name << "\nid: " << id << std::endl;
-
-// 	changeVol(id, 0);
-//     sleep(1);
-// 	changeVol(id, 80);
-    while(true)
-    {
-		fadeVol(id, 100, 10, 2);
-		fadeVol(id, 10, 100, 2);
-	}*/
+    int h = min / 60;
+    int m = min % 60;
+    
+    std::string zero = "";
+    if(m<10) zero ="0";
+    
+    return std::to_string(h) + ":" + std::to_string(m) + zero;
 }
-
-
-// perl -pe 's/ *index: ([0-9]+).+?application\.name = "([^\r]+)"\r.+?(?=index:|$)/\2:\1\r/g'
-
 
 
 int main(int argc, char** argv) {

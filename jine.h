@@ -1,10 +1,13 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 #include <unistd.h>
 #include <chrono>
 #include <thread>
 #include <vector>
+
+#include <chrono>
+#include <ctime>    
 
 class Jine
 {
@@ -19,29 +22,34 @@ private:
 	
 	//execute command
 	std::string exec(const char* cmd);
-	
-	void changeVol(int id, int volPercent);
-	void fadeVol(int id, int start, int end, float secs);
-	
-	void listInputs();
+		
+	void changeVol();
+	void fadeVol(int start, int end, float secs);
 	
 	int m_sinkID = -1;
 	
-	float m_cycleMins;
-		
 	struct Jingle
 	{
 		std::string name;
+		std::string field;
 		std::string path;
-		float startTime;
-		float duration;
-		
+        int min;
+        
+        std::string time();    
 	};
 	
 	std::vector<Jingle> m_jingles;
-		
-	void wait(float secs, std::string nextAction);
-	
+			
 	void playJingle(Jingle jingle);
+	
+    void createJingle(std::string field, int hour, int min);
+	
+	std::time_t m_now;
+	int m_jingleID = 0;
+	int m_max_musik_vol = 50;
+	int m_vol = m_max_musik_vol;
+	
+	
+	void printConsole();
 	
 };
