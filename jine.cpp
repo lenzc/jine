@@ -137,7 +137,7 @@ void Jine::run()
         
         printConsole();
         
-        if(s_today - m_jingles[m_jingleID].min * 60 > 10)
+        if(s_today - m_jingles[m_jingleID].min * 60 > 30)
         {
             m_jingleID++;
             continue;
@@ -235,7 +235,7 @@ std::string Jine::Jingle::time()
     std::string zero = "";
     if(m<10) zero ="0";
     
-    return std::to_string(h) + ":" + std::to_string(m) + zero;
+    return std::to_string(h) + ":" + zero + std::to_string(m);
 }
 
 
