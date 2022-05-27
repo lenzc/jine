@@ -9,13 +9,3 @@ set(CMAKE_CXX_STANDARD 11)
 add_executable(jine
 	jine.cpp
 )
-
-
-add_executable(pulse_test
-	pulse_test.cpp
-)
-
-target_link_libraries(pulse_test
-	pulse
-	pulse-simple
-)
