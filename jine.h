@@ -1,3 +1,8 @@
+//Jingle player for Ultimate Frisbee tournaments
+//Author: Christian Lenz <chrislenz@mailbox.org>
+
+#pragma once
+
 #include <stdio.h>
 #include <string>
 #include <iostream>
@@ -8,6 +13,7 @@
 
 #include <chrono>
 #include <ctime>
+
 
 class Jine
 {

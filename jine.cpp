@@ -1,3 +1,6 @@
+//Jingle player for Ultimate Frisbee tournaments
+//Author: Christian Lenz <chrislenz@mailbox.org>
+
 #include "jine.h"
 
 #include <boost/algorithm/string.hpp>
