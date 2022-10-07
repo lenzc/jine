@@ -1,9 +1,7 @@
-1:40
-
-PreGame;-0:05;jingles/test.mp3
-Start;0:00;jingles/test2.mp3
-5min;1:25;jingles/test2.mp3
-End;1:30;jingles/test2.mp3
+PreGame;-0:05;../jingles/test.mp3
+Start;0:00;../jingles/test2.mp3
+5min;1:25;../jingles/test2.mp3
+End;1:30;../jingles/test2.mp3
 
 Ultimate Lions - RotPot | Funatics - Caracals;9:00
 Alsters - Nullacht! | Bonnsai - Alster2Go;10:40
