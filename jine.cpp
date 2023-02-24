@@ -13,6 +13,7 @@ Jine::Jine()
 
 bool Jine::init(std::string app, std::string jingleFilePath)
 {
+
 	//load jingle file
 	m_jingleFilePath = jingleFilePath;
 	load_jingles();
@@ -22,6 +23,7 @@ bool Jine::init(std::string app, std::string jingleFilePath)
 
 	std::string cmd_name = R"EOS(pacmd list-sink-inputs | tr '\n' '\r' | perl -pe 's/ *index: ([0-9]+).+?application\.name = "([^\r]+)"\r.+?(?=index:|$)/\2\r/g' | tr '\r' '\n')EOS";
 	std::string cmd_id = R"EOS(pacmd list-sink-inputs | tr '\n' '\r' | perl -pe 's/ *index: ([0-9]+).+?application\.name = "([^\r]+)"\r.+?(?=index:|$)/\1\r/g' | tr '\r' '\n')EOS";
+
 
 
 	std::string name = exec(cmd_name.c_str());
@@ -100,30 +102,30 @@ void Jine::load_jingles()
 	std::string line;
 
 	//roll over time
-	if(!std::getline(file, line))
-	{
-		std::cout << "Can't read jingle file!\n";
-		std::abort();
-	}
+// 	if(!std::getline(file, line))
+// 	{
+// 		std::cout << "Can't read jingle file!\n";
+// 		std::abort();
+// 	}
+//
+// 	while(line.size() < 1 || line[0] == '#')
+// 	{
+// 		if(!std::getline(file,line))
+// 		{
+// 			std::cout << "Can't read jingle file!\n";
+// 			std::abort();
+// 		}
+// 	}
 
-	while(line.size() < 1 || line[0] == '#')
-	{
-		if(!std::getline(file,line))
-		{
-			std::cout << "Can't read jingle file!\n";
-			std::abort();
-		}
-	}
 
-
-	m_rollover_min = stringToMin(line);
+// 	m_rollover_min = stringToMin(line);
 
 	//skipp empty lines
-	while(std::getline(file, line))
-	{
-		if(line.length() < 1)
-			break;
-	}
+// 	while(std::getline(file, line))
+// 	{
+// 		if(line.length() < 1)
+// 			break;
+// 	}
 
 	//read jingles for a single game
 	while(std::getline(file, line))
@@ -142,10 +144,10 @@ void Jine::load_jingles()
 		m_gameInfo.push_back(game);
 	}
 
-
 	//read game infos and create jingles
 	while(std::getline(file, line))
 	{
+
 		if(line.length() < 1)
 			break;
 
