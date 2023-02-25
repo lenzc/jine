@@ -27,7 +27,7 @@ Jine is a small jingle player for Ultimate Frisbee tournaments or other sport ev
 	./jine <audio source name> <jingle file>
 	```
 For example:
-	```sh
+	```
 	./jine spotify ../mixed_sa.txt
 	```
 
