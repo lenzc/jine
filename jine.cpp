@@ -6,6 +6,8 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 
+#define SUMMERTIME false
+
 Jine::Jine()
 {
 }
@@ -199,7 +201,9 @@ void Jine::run()
 
         //current time
         m_now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        int h = (m_now / 3600) % 24 + 2;
+        int h = (m_now / 3600) % 24 + 1;
+		if(SUMMERTIME)
+			h+=1;
         int m = (m_now / 60) % 60;
         int s = m_now % 60;
 
