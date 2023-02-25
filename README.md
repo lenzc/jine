@@ -4,7 +4,7 @@ Jine is a small jingle player for Ultimate Frisbee tournaments or other sport ev
 ## Install
  1. Install required packages:
 	```sh
-	sudo apt-get install libboost-dev
+	sudo apt install libboost-dev
 	sudo apt install mpg321
 	```
 
