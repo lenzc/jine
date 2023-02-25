@@ -234,7 +234,9 @@ void Jine::run()
 void Jine::printConsole()
 {
     system("clear");
-    int h = (m_now / 3600) % 24 + 2;
+    int h = (m_now / 3600) % 24 + 1;
+	if(SUMMERTIME)
+		h += 1;
     int m = (m_now / 60) % 60;
     int s = m_now % 60;
 
