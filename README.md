@@ -2,11 +2,17 @@
 Jine is a small jingle player for Ultimate Frisbee tournaments or other sport events.
 
 ## Install
- 1. clone project
+ 1. Install required packages:
+	```sh
+	sudo apt-get install libboost-dev
+	sudo apt install mpg321
+	```
+
+ 2. clone project
     ```sh
 	git clone https://github.com/lenzc/jine.git
 	```
- 2. Compile
+ 3. Compile
 	```sh
 	cd jine
 	mkdir build && cd build
