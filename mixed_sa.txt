@@ -1,13 +1,13 @@
 1:40
 
-PreGame;-0:05;jingles/test.mp3
-Start;0:00;jingles/test2.mp3
-5min;1:25;jingles/test2.mp3
-End;1:30;jingles/test2.mp3
+PreGame;-0:05;../jingles/pre5.mp3
+Start;0:00;../jingles/start.mp3
+5min;1:25;../jingles/5min.mp3
+End;1:30;../jingles/end.mp3
 
-Bonnsai - Nullacht! | Funatics - RotPot;9:00
-Ultimate Lions - Caracals | Alsters - Alster2Go;10:40
-Bonnsai - Rotpot | Funatics - Nullacht!;12:20
-Ultimate Lions - Alster2Go | Alsters - Caracals;14:00
-Bonnsai - Funatics | Nullacht! - Rotpot;15:40
-Caracals - Alster2Go | Ultimate Lions - Alsters;17:20
+Bonnsai - Nullacht! | Funatics - RotPot | ;9:00
+Ultimate Lions - Caracals | Alsters - Alster2Go | ;10:40
+Bonnsai - Rotpot | Funatics - Nullacht! | ;12:20
+Ultimate Lions - Alster2Go | Alsters - Caracals | ;14:00
+Bonnsai - Funatics | Nullacht! - Rotpot | ;15:40
+Caracals - Alster2Go | Ultimate Lions - Alsters | ;17:20
