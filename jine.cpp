@@ -67,6 +67,7 @@ bool Jine::init(std::string app, std::string jingleFilePath)
 	{
 		m_sinkID = std::stoi(ids[targetIdx]);
 		std::cout << "found target sink: " << sinks[targetIdx] << " with id: " << m_sinkID << "\n";
+		changeVol();
 		return true;
 	}
 	else
@@ -75,7 +76,7 @@ bool Jine::init(std::string app, std::string jingleFilePath)
 		return false;
 	}
 
-
+	
 
 }
 
@@ -155,7 +156,7 @@ void Jine::load_jingles()
 void Jine::playJingle(Jingle jingle)
 {
 	std::cout << "starting jingle '" << jingle.name << "'\n";
-	std::string cmd_name = "mpg321 -q -v jingles/" + jingle.path;
+	std::string cmd_name = "mpg321 -q -v " + jingle.path;
 	exec(cmd_name.c_str());
 }
 
@@ -313,11 +314,7 @@ std::string Jine::Jingle::time()
 
     std::string zero = "";
     if(m<10) zero ="0";
-<<<<<<< HEAD
-
-=======
-
->>>>>>> mixed
+	
     return std::to_string(h) + ":" + zero + std::to_string(m);
 }
 
