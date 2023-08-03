@@ -1,15 +1,22 @@
+//Jingle player for Ultimate Frisbee tournaments
+//Author: Christian Lenz <chrislenz@mailbox.org>
+
 #include "jine.h"
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+
+#define SUMMERTIME true
 
 Jine::Jine()
 {
 }
 
 
-bool Jine::init(std::string app, std::string jingleFilePath)
+bool Jine::init(std::string app, std::string jingleFilePath, int maxVol)
 {
+    m_maxMusikVol = m_vol = maxVol;
+
 	//load jingle file
 	m_jingleFilePath = jingleFilePath;
 	load_jingles();
@@ -19,6 +26,7 @@ bool Jine::init(std::string app, std::string jingleFilePath)
 
 	std::string cmd_name = R"EOS(pacmd list-sink-inputs | tr '\n' '\r' | perl -pe 's/ *index: ([0-9]+).+?application\.name = "([^\r]+)"\r.+?(?=index:|$)/\2\r/g' | tr '\r' '\n')EOS";
 	std::string cmd_id = R"EOS(pacmd list-sink-inputs | tr '\n' '\r' | perl -pe 's/ *index: ([0-9]+).+?application\.name = "([^\r]+)"\r.+?(?=index:|$)/\1\r/g' | tr '\r' '\n')EOS";
+
 
 
 	std::string name = exec(cmd_name.c_str());
@@ -98,20 +106,30 @@ void Jine::load_jingles()
 	std::string line;
 
 	//roll over time
-	if(!std::getline(file, line))
-	{
-		std::cout << "Can't read jingle file!\n";
-		return;
-	}
-	m_rollover_min = stringToMin(line);
-	std::cout << line << " = " << m_rollover_min << "\n";
+// 	if(!std::getline(file, line))
+// 	{
+// 		std::cout << "Can't read jingle file!\n";
+// 		std::abort();
+// 	}
+//
+// 	while(line.size() < 1 || line[0] == '#')
+// 	{
+// 		if(!std::getline(file,line))
+// 		{
+// 			std::cout << "Can't read jingle file!\n";
+// 			std::abort();
+// 		}
+// 	}
+
+
+// 	m_rollover_min = stringToMin(line);
 
 	//skipp empty lines
-	while(std::getline(file, line))
-	{
-		if(line.length() < 1)
-			break;
-	}
+// 	while(std::getline(file, line))
+// 	{
+// 		if(line.length() < 1)
+// 			break;
+// 	}
 
 	//read jingles for a single game
 	while(std::getline(file, line))
@@ -130,10 +148,10 @@ void Jine::load_jingles()
 		m_gameInfo.push_back(game);
 	}
 
-
 	//read game infos and create jingles
 	while(std::getline(file, line))
 	{
+
 		if(line.length() < 1)
 			break;
 
@@ -145,10 +163,6 @@ void Jine::load_jingles()
 			m_jingles.push_back({g.jingle, gameName, g.path, dayTimeInMin + g.relativeMin});
 		}
 	}
-
-// 	std::cout << "ende\n";
-// 	std::abort();
-
 
 }
 
@@ -172,24 +186,6 @@ void Jine::createJingle(std::string gameName, int hour, int min)
 
 void Jine::run()
 {
-    //Samstag
-//     createJingle("1 2", 9, 0);
-//     createJingle("1  ", 10, 40);
-//     createJingle("  2", 11, 40);
-//     createJingle("1 2", 13, 20);
-//     createJingle("1  ", 15, 30);
-//     createJingle("1 2", 17, 10);
-
-
-    //Sonntag
-//     createJingle("1 2", 9, 0);
-//     createJingle("1  ", 10, 40);
-//     createJingle("  2", 11, 40);
-//     createJingle("1 2", 13, 50);
-
-
-
-//     m_jingles.push_back({"test1", "1",  "end_kurz.mp3", 18*60 + 14});
 
     std::sort(m_jingles.begin(), m_jingles.end(), [](Jingle a, Jingle b) {
         return a.min < b.min;
@@ -201,17 +197,20 @@ void Jine::run()
 	{
         if(m_jingleID == m_jingles.size())
         {
+            printConsole();
+            std::cout << "--------------------\n";
             std::cout << "day is over. No jingles left. JingleID: " << m_jingleID << "\n";
             return;
         }
 
         //current time
         m_now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        int h = (m_now / 3600) % 24 + 2;
+        int h = (m_now / 3600) + 1;
+		if(SUMMERTIME)
+			h+=1;
+        h = h % 24;
         int m = (m_now / 60) % 60;
         int s = m_now % 60;
-
-//         std::cout << h << ":" << m << ":" << s << "\n";
 
         int s_today = h * 3600 + 60 * m + s;
 
@@ -240,7 +239,10 @@ void Jine::run()
 void Jine::printConsole()
 {
     system("clear");
-    int h = (m_now / 3600) % 24 + 2;
+    int h = (m_now / 3600) + 1;
+	if(SUMMERTIME)
+		h += 1;
+    h = h % 24;
     int m = (m_now / 60) % 60;
     int s = m_now % 60;
 
@@ -250,10 +252,12 @@ void Jine::printConsole()
     std::cout << "Time: " << h << ":" << m_zero << m << ":" << s_zero << s ;
     std::cout << "\t musik vol: " << m_vol << "\n";
     auto nextJingle = m_jingles[m_jingleID];
-    std::cout << "\nNext Jingle: " << nextJingle.name << " at " << nextJingle.time() << "\n";
+    std::cout << "\nNext Jingle: '" << nextJingle.name << "' at " << nextJingle.time() << "\n";
+
+// 	std::cout << "rollover time: " << m_rollover_min << " mins\n";
 
     std::cout << "\n\n\tJingle list:\n\n ";
-    std::cout << "Field\tJingle\tTime\n";
+    std::cout << "Game\tJingle\tTime\n";
 
     for(unsigned int i=0;i<m_jingles.size();i++)
     {
@@ -314,7 +318,6 @@ std::string Jine::Jingle::time()
 
     std::string zero = "";
     if(m<10) zero ="0";
-	
     return std::to_string(h) + ":" + zero + std::to_string(m);
 }
 
@@ -326,19 +329,21 @@ int main(int argc, char** argv) {
 		std::cout << "Usage: jine <music source name> [jingle file (default: jingles.txt)]\n";
 		return 0;
 	}
+	
 
 	std::string jingleFilePath = "jingles.txt";
 	if(argc > 2)
 		jingleFilePath = argv[2];
 
 	Jine jine;
+    
+    int maxVol = 50;
+	if(argc > 3)
+        maxVol = std::stoi(argv[3]);
 
-	if(!jine.init(argv[1], jingleFilePath))
+	if(!jine.init(argv[1], jingleFilePath, maxVol))
 		return 0;
 
-	//read timetable
-
-	//run
 	jine.run();
 
 
