@@ -1,5 +1,5 @@
 ## About The Project
-Jine is a small jingle player for Ultimate Frisbee tournaments or other sport events.
+Jine is a small jingle player for Ultimate Frisbee tournaments or other sport events. It runs alongside PulseAudio or PipeWire (via its `pipewire-pulse` compatibility layer), ducking your music source's volume to play jingles at the right time, and it comes with a small web UI so you can watch the schedule and adjust volume, mute jingles, or trigger one directly from a phone or tablet on the same network.
 
 ## Install
  1. Install required packages:
@@ -7,6 +7,7 @@ Jine is a small jingle player for Ultimate Frisbee tournaments or other sport ev
 	sudo apt install libboost-dev
 	sudo apt install mpg321
 	```
+	Also requires `pactl` and `paplay` (both from `pulseaudio-utils`), which are normally already installed alongside PulseAudio or PipeWire. Jingles are decoded by `mpg321` and piped into `paplay` for actual playback, since `mpg321`'s own audio output has been observed to hang after playback finishes on some PipeWire setups.
 
  2. clone project
     ```sh
@@ -24,12 +25,15 @@ Jine is a small jingle player for Ultimate Frisbee tournaments or other sport ev
 1. Start any music source (e.g. spotify)
 2. Start jine
 	```sh
-	./jine <audio source name> <jingle file>
+	./jine <audio source name> [jingle file] [max volume] [web UI port]
 	```
 For example:
 	```
-	./jine spotify ../mixed_sa.txt
+	./jine spotify ../mixed_sa.txt 50 8080
 	```
+	Defaults: jingle file `jingles.txt`, max volume `50`, web UI port `8080`.
+
+3. Open the web UI from any browser on the same network, e.g. `http://<this-machine's-ip>:8080`, to see the schedule and control volume/skip jingles.
 
 
 ## Jingle file

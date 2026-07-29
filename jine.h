@@ -10,6 +10,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <mutex>
 
 #include <chrono>
 #include <ctime>
@@ -21,7 +22,7 @@ public:
 
 	Jine();
 
-	bool init(std::string app, std::string jingleFilePath, int maxVol);
+	bool init(std::string app, std::string jingleFilePath, int maxVol, int httpPort = 8080);
 	void run();
 
 private:
@@ -35,6 +36,27 @@ private:
 
 	void changeVol();
 	void fadeVol(int start, int end, float secs);
+
+	struct SinkInput
+	{
+		int index;
+		std::string appName;
+	};
+	std::vector<SinkInput> listSinkInputs();
+
+	//web UI
+	void startServer();
+	std::string statusJson();
+	void adjustVolume(int delta);
+	void playJingleNow(int index);
+	void setPlaying(bool playing);
+	void toggleJingleMute();
+
+	int m_httpPort = 8080;
+	std::recursive_mutex m_mutex;
+	std::mutex m_playbackMutex;
+	bool m_playing = false;
+	bool m_jingleMuted = false;
 
 	int m_sinkID = -1;
 
@@ -62,6 +84,7 @@ private:
 	std::vector<Jingle> m_jingles;
 
 	void playJingle(Jingle jingle);
+	void playWithFade(Jingle jingle);
 
     void createJingle(std::string gameName, int hour, int min);
 
